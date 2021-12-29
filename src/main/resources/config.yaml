@@ -1,0 +1,8 @@
+api:
+  name: "s-db"
+  client_id: "c47b595d20b3432c96a9128bde4c3dcd"
+  client_secret: ""
+https:
+  port : "8082"
+  path : "dbUsers"
+  host : "localhost"

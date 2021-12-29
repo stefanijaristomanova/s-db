@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5bb53501-2f12-4ee9-9366-7b42231479f5" >
+		<http:listener-connection host="0.0.0.0" port="${https.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="0a8bea54-de37-4058-8d1b-61595bbd7af1" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="12345" database="usersdb" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="be72b5b0-bf66-47ac-a861-3b846c984cec" file="config.yaml" />
+	<flow name="readDataFromDb" doc:id="27b1b61d-7cd9-4773-9d41-c154021d3728" >
+		<db:select doc:name="DBUsers" doc:id="5770a232-582e-46d9-8a02-b7f7c0e04133" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * from users_info]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="java to json" doc:id="f39ed27e-97f9-4761-8392-2af9b75c357f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="users from DB" doc:id="7d40dbc9-9acc-4dcc-91aa-122966275f33" />
+	</flow>
+</mule>
