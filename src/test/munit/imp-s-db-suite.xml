@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="imp-s-db-suite.xml" />
+	<munit:test name="readDataFromDb-test" doc:id="fee090b1-2c13-42df-ac2a-6cb8a0c9513c" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock DBUsers" doc:id="f78736fe-b368-4bbf-a5cb-f8444bb4f1c3" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5770a232-582e-46d9-8a02-b7f7c0e04133" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://readDataFromDbtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://readDataFromDbtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy java to json" doc:id="4873957f-853e-4b87-8669-616001281b62" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f39ed27e-97f9-4761-8392-2af9b75c357f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="08822cc2-08e7-4769-a9f7-c7237722da53" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import readDataFromDbtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="7515a474-1e3a-4687-9c2b-81a207cb155f" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import readDataFromDbtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="05a93876-da99-4010-92ef-69f133807e4b" >
+				<munit:attributes value="#[readUrl('classpath://readDataFromDbtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://readDataFromDbtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to readDataFromDb" doc:id="c42f21c7-e5d4-44a3-8a94-78ddafe9acc4" name="readDataFromDb"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="9c0f0c64-e44e-4fc8-9b53-8108f6d77b1b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import readDataFromDbtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify users from DB" doc:id="c48c1608-23ae-48cc-80d7-f7c57586f59f" processor="set-payload" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7d40dbc9-9acc-4dcc-91aa-122966275f33" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify java to json" doc:id="f3c22c9f-8bfc-4a08-a983-c026933b545a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f39ed27e-97f9-4761-8392-2af9b75c357f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

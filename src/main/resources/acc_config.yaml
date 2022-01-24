@@ -1,0 +1,14 @@
+s-db:
+  autodiscovery: "17540617"
+  client_id: "43566c4218f64415b6a81e799c739331"
+  client_secret: ""
+http:
+  port: "8081"
+  path: "dbUsers"
+  host: "0.0.0.0" 
+sql:
+  port: "3306"
+  host: "sql5.freemysqlhosting.net"
+  database: "sql5463008"
+  password: "" # TO CONFIGURE
+  username: "sql5463008"
