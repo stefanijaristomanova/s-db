@@ -1,0 +1,70 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy to EU CloudHub ACC
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+env:
+  applicationName: 's-db'
+  muleAppVersion: '1.0.0' # Must match with the version in the jira ticket
+  artifactName: 's-db-1.0.0-mule-application'
+  uri: 'https://s-db.ir-e1.cloudhub.io/'
+  environment: 'Sandbox'
+  workerType: MICRO
+  region: EU (Ireland)
+  noOfWorkers: 1
+  
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvn-
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v2.x
+      - name: Maven Settings
+        env:
+          MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_MULESOFT_SETTINGS_XML }}
+        run:
+          echo $MAVEN_SETTINGS_XML | base64 -d > ${{ github.workspace }}/settings.xml
+      - name: Update pom.xml Version
+        run: mvn versions:set -DnewVersion=${{env.muleAppVersion}}
+      - name: Build with Maven
+        run:
+          mvn -B package -s ${{ github.workspace }}/settings.xml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.artifactName}}
+          path: ${{ github.workspace }}/target/*mule-application*.jar
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{env.artifactName}}
+    - name: Deploy to On prem
+      run: |
+        artifactName=$(ls *.jar | head -1)
+        mvn package deploy -DmuleDeploy -Danypoint.url=${{env.uri}} -Danypoint.env=${{env.environment}} -Danypoint.appName=${{ env.applicationName }} -Danypoint.username=${{ secrets.ANYPOINT_USERNAME }} -Danypoint.password=${{ secrets.ANYPOINT_PASSWORD }}  -Danypoint.muleVersion=${{env.muleVersion}} -Danypoint.region=${{env.region}} -Danypoint.workers=${{env.noOfWorkers}} -Danypoint.workerType=${{env.workerType}}
+          
