@@ -116,6 +116,13 @@
 			<version>1.0.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>2ed587c4-ea36-44a8-9424-9a402da6979b</groupId>
+			<artifactId>s-db</artifactId>
+			<version>1.0.0</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
+		</dependency>
 	</dependencies>
 
 	<repositories>
