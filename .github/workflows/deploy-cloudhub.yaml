@@ -23,13 +23,15 @@ env:
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    name: Build and Package project
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-#       - uses: actions/cache@v2
-      - uses: s4u/maven-settings-action@v2.4.1
-
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-mvn-${{ hashFiles('**/pom.xml') }}
@@ -37,11 +39,6 @@ jobs:
             ${{ runner.os }}-mvn-
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
-      - name: Maven Settings
-        env:
-          MAVEN_SETTINGS_XML: ${{ secrets.MAVEN_MULESOFT_SETTINGS_XML }}
-        run:
-          echo $MAVEN_SETTINGS_XML | base64 -d > ${{ github.workspace }}/settings.xml
       - name: Update pom.xml Version
         run: mvn versions:set -DnewVersion=${{env.muleAppVersion}}
       - name: Build with Maven
