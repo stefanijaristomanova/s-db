@@ -34,8 +34,8 @@ jobs:
       with:
         java-version: 1.8
     
-    - name: Print effective-settings (optional)
-      run: mvn help:effective-settings
+#     - name: Print effective-settings (optional)
+#       run: mvn help:effective-settings
     
     - name: Build with Maven
       run: mvn -B package --file pom.xml
