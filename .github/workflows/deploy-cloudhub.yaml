@@ -1,6 +1,13 @@
 # This workflow will build a MuleSoft project and deploy to CloudHub
 
 name: Build and Deploy to Sandbox
+env:
+  applicationName: 's-db'
+  artifactName: 's-db-mule-application'
+  hostname: 'anypoint.mulesoft.com'
+  applicationIdCloudhub: '17545841' # Application id, can be found in the anypoint platform
+  organizationId: '2ed587c4-ea36-44a8-9424-9a402da6979b' # OrganizationId
+  environmentId: 'e682c973-f385-47db-a4cc-e820c0af6952' # EnvironmentId : Acceptance, can be found at https://eu1.anypoint.mulesoft.com/accounts/api/organizations/c43e3f9c-5cda-4b72-921d-a17fc5729975/environments
 
 on:
   push:
@@ -70,9 +77,6 @@ jobs:
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
       run: |
-        artifactName=$(ls *.jar | head -1)
-        mvn deploy -DmuleDeploy \
-         -Dmule.artifact=$artifactName \
-         -Danypoint.username="$USERNAME" \
-         -Danypoint.password="$PASSWORD" \
-         -DskipTests
+        run: >
+          curl --fail --show-error --request PATCH 'https://${{ env.hostname }}/hybrid/api/v1/applications/${{ env.applicationIdCloudhub }}' -H 'content-type: multipart/form-data' -H 'x-anypnt-env-id: ${{ env.environmentId }}' -H 'x-anypnt-org-id: ${{ env.organizationId }}' -F file=@./${{ steps.getfilename.outputs.file }} -F artifactName=${{ env.applicationName }}
+
