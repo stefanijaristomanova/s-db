@@ -15,7 +15,6 @@
 		<app.runtime>4.3.0-20210622</app.runtime>
 		<mule.maven.plugin.version>3.5.2</mule.maven.plugin.version>
 		<munit.version>2.3.6</munit.version>
-		<skipTests>true</skipTests>
 		<skipMunitTests>true</skipMunitTests>
 	</properties>
 
