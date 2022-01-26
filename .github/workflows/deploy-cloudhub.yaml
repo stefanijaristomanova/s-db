@@ -4,9 +4,15 @@ name: Build and Deploy to Sandbox
 env:
   applicationName: 's-db'
   artifactName: 's-db-mule-application'
-  hostname: 'anypoint.mulesoft.com'
+  hostname: 'https://anypoint.mulesoft.com'
+  uri: 'anypoint.mulesoft.com'
   applicationIdCloudhub: '17545841' # Application id, can be found in the anypoint platform
   organizationId: '2ed587c4-ea36-44a8-9424-9a402da6979b' # OrganizationId
+  environment: "Sandbox"
+  region: eu-west-1
+  noOfWorkers: 1
+  workerType: MICRO
+  muleAppVersion: '1.0.0' 
   environmentId: 'e682c973-f385-47db-a4cc-e820c0af6952' # EnvironmentId : Acceptance, can be found at https://eu1.anypoint.mulesoft.com/accounts/api/organizations/c43e3f9c-5cda-4b72-921d-a17fc5729975/environments
 
 on:
@@ -53,31 +59,27 @@ jobs:
       with:
           name: artifacts
           path: target/*.jar
-        
+          
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    steps:    
-    
-    - uses: actions/checkout@v2
-    
-    - uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-    
-    - uses: actions/download-artifact@master
-      with:
-        name: artifacts
-    
-    - name: Deploy to Sandbox
-      env:
-        USERNAME: ${{ secrets.USERNAME }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-      run: |
-        run: >
-          curl --fail --show-error --request PATCH 'https://${{ env.hostname }}/hybrid/api/v1/applications/${{ env.applicationIdCloudhub }}' -H 'content-type: multipart/form-data' -H 'x-anypnt-env-id: ${{ env.environmentId }}' -H 'x-anypnt-org-id: ${{ env.organizationId }}' -F file=@./${{ steps.getfilename.outputs.file }} -F artifactName=${{ env.applicationName }}
-
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/download-artifact@master
+        with:
+          name: artifacts
+      - name: Deploy to CloudHub
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+        run: |
+          artifactName=$(ls *.jar | head -1)
+          mvn mule:deploy -DskipMunitTests -Dmule.artifact=$artifactName -Danypoint.username="$USERNAME" -Danypoint.password="$PASSWORD" -Danypoint.platform.clientId="$PLATFORM_CLIENT_ID" -Danypoint.platform.clientSecret="$PLATFORM_CLIENT_SECRET"   
