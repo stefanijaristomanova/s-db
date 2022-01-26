@@ -59,26 +59,27 @@ jobs:
       with:
           name: artifacts
           path: target/*.jar
-        
+          
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    steps:    
-    
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-    
-    - uses: actions/download-artifact@v2
-      with:
-        name: ${{env.artifactName}}
-    
-    - name: Deploy to Sandbox
-      run: |
-        artifactName=$(ls *.jar | head -1)
-        mvn package deploy -DmuleDeploy -Danypoint.url=${{env.uri}} -Danypoint.env=${{env.environment}} -Danypoint.appName=${{ env.applicationName }} -Danypoint.username=${{ secrets.USERNAME }} -Danypoint.password=${{ secrets.PASSWORD }}  -Danypoint.muleVersion=${{env.muleVersion}} -Danypoint.region=${{env.region}} -Danypoint.workers=${{env.noOfWorkers}} -Danypoint.workerType=${{env.workerType}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/download-artifact@master
+        with:
+          name: artifacts
+      - name: Deploy to CloudHub
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          PLATFORM_CLIENT_ID: ${{ secrets.PLATFORM_CLIENT_ID }}
+          PLATFORM_CLIENT_SECRET: ${{ secrets.PLATFORM_CLIENT_SECRET }}
+        run: |
+          artifactName=$(ls *.jar | head -1)
+          mvn mule:deploy -DskipMunitTests -Dmule.artifact=$artifactName -Danypoint.username="$USERNAME" -Danypoint.password="$PASSWORD" -Danypoint.platform.clientId="$PLATFORM_CLIENT_ID" -Danypoint.platform.clientSecret="$PLATFORM_CLIENT_SECRET"   
