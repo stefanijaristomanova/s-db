@@ -33,7 +33,7 @@
 				<configuration>
 					<sharedLibraries>
 						<sharedLibrary>
-							<groupId>com.mycompany</groupId>
+							<groupId>org.mule.connectors</groupId>
 							<artifactId>mysql-connector-java-8.0.25</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
@@ -86,7 +86,7 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany</groupId>
+			<groupId>org.mule.connectors</groupId>
 			<artifactId>mysql-connector-java-8.0.25</artifactId>
 			<version>0.1</version>
 		</dependency>
