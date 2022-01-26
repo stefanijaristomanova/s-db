@@ -12,6 +12,8 @@ env:
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - src\test\munit
   workflow_dispatch:
     
 jobs:
