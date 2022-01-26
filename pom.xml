@@ -39,6 +39,18 @@
 							<artifactId>mysql-connector-java</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
+					<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>4.3.0</muleVersion>
+						<username>${anypoint.username}</username>
+						<password>${anypoint.password}</password>
+						<applicationName>mule-app-cicd-github</applicationName>
+						<environment>Sandbox</environment>
+						<workerType>MICRO</workerType>
+						<region>us-west-1</region>
+						<workers>1</workers>
+						<objectStoreV2>true</objectStoreV2>
+					</cloudHubDeployment>
 				</configuration>
 			</plugin>
 			<plugin>
