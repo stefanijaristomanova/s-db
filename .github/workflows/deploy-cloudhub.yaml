@@ -9,7 +9,7 @@ env:
   applicationIdCloudhub: '17545841' # Application id, can be found in the anypoint platform
   organizationId: '2ed587c4-ea36-44a8-9424-9a402da6979b' # OrganizationId
   environment: "Sandbox"
-  region: ir-e1
+  region: eu-west-1
   noOfWorkers: 1
   workerType: micro
   muleAppVersion: '1.0.0' 
