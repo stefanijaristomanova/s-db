@@ -40,15 +40,15 @@
 						</sharedLibrary>
 					</sharedLibraries>
 					<cloudHubDeployment>
-						<uri>https://anypoint.mulesoft.com</uri>
+						<uri>${uri}</uri>
 						<muleVersion>4.4.0</muleVersion>
-						<username>${anypoint.username}</username>
+						<username>${anypoint.userName}</username>
 						<password>${anypoint.password}</password>
-						<applicationName>mule-app-cicd-github</applicationName>
-						<environment>Sandbox</environment>
-						<workerType>MICRO</workerType>
-						<region>ir-e1</region>
-						<workers>1</workers>
+						<applicationName>s-db</applicationName>
+						<environment>${environment}</environment>
+						<workerType>${workerType}</workerType>
+						<region>${region}</region>
+						<workers>${noOfWorkers}</workers>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 				</configuration>
