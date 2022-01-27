@@ -144,6 +144,9 @@
 			<name>Anypoint Exchange</name>
 			<url>https://maven.anypoint.mulesoft.com/api/v2/maven</url>
 			<layout>default</layout>
+			  <snapshots>
+			    <enabled>true</enabled>
+			  </snapshots>
 		</repository>
 		<repository>
 			<id>mulesoft-releases</id>
