@@ -50,6 +50,7 @@
 						<region>${region}</region>
 						<workers>${noOfWorkers}</workers>
 						<objectStoreV2>true</objectStoreV2>
+						<deploymentTimeout>90000000000</deploymentTimeout>
 					</cloudHubDeployment>
 				</configuration>
 			</plugin>
