@@ -44,7 +44,7 @@
 						<muleVersion>4.4.0</muleVersion>
 						<username>${anypoint.userName}</username>
 						<password>${anypoint.password}</password>
-						<applicationName>s-db-wearedesperate</applicationName>
+						<applicationName>s-db</applicationName>
 						<environment>${environment}</environment>
 						<workerType>${workerType}</workerType>
 						<region>${region}</region>
